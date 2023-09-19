@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+  <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d %5p [%t] (%F:%L) - %m%n"/>
+      </layout>
+  </appender>
+  <appender name="fileout" class="org.apache.log4j.RollingFileAppender">
+      <param name="append" value="true"/>
+      <param name="file" value="@log4j.log.directory@"/>
+      <layout class="org.apache.log4j.PatternLayout">
+           <param name="ConversionPattern" value="%d %5p [%t] (%F:%L) - %m%n"/>
+      </layout>
+  </appender>
+  <logger name="com.jolbox.bonecp">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="com.mchange">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="o.q.i.jdbcjobstore.SimpleSemaphore">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.hibernate.cache">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="jobscheduler">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.springframework.scheduling.quartz">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  
+  <logger name="org.springframework.core.io.support.PathMatchingResourcePatternResolver">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>  
+  <logger name="org.hibernate.type">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.hibernate.SQL">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.quartz" additivity="false">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.hibernate">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.hibernate.tool.hbm2ddl">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="c.jolbox.bonecp.ConnectionPartition">
+      <level value="FATAL" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl">
+      <level value="FATAL" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  <logger name="org.apache.commons.vfs2">
+      <level value="WARN" />
+	  <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </logger>
+  
+  <root>
+      <level value="ALL" />
+      <appender-ref ref="stdout"/>
+      <appender-ref ref="fileout"/>
+  </root>
+</log4j:configuration>

@@ -1,0 +1,182 @@
+<project name="depot" basedir="" default="localhostDeploy">
+
+    <target name="init-localhost">
+
+        <loadproperties>
+            <file file="build/localhost.properties" />
+        </loadproperties>
+
+        <property name="warfile.name" value="depot" />
+        <property name="package.name" value="${warfile.name}.war" />
+        <!--Tomcat Specific variables-->
+        <property name="tomcat.dir" value="/usr/local/apache-tomcat-7.0.109" />
+        <property name="webapp.dir" value="${tomcat.dir}/webapps" />
+        <property name="package.file" value="${webapp.dir}/${package.name}" />
+        <!--Workspace specific variables-->
+        <property name="workspace.dir" value="." />
+        <property name="webcontent.dir" value="${workspace.dir}/WebContent" />
+        <property name="web-inf.dir" value="${webcontent.dir}/WEB-INF" />
+        <property name="lib.dir" location="${web-inf.dir}/lib" />
+        <property name="pages.dir" value="${web-inf.dir}/jsp" />
+        <property name="src.dir" value="${workspace.dir}/src" />
+        <property name="properties.dir" value="${web-inf.dir}/classes" />
+        <!-- temp directory created to build project for war-->
+        <property name="temp.dir" value="${workspace.dir}/buildWork" />
+        <property name="temp.dir.web-inf" value="${temp.dir}/WEB-INF" />
+        <property name="temp.dir.web-inf.jsp" value="${temp.dir.web-inf}/jsp" />
+        <property name="temp.dir.lib" value="${temp.dir.web-inf}/lib" />
+        <property name="temp.dir.classes" value="${temp.dir.web-inf}/classes" />
+        <property name="temp.dir.meta-inf" value="${temp.dir}/META-INF" />
+    </target>
+
+    <target name="init-production">
+
+        <loadproperties>
+            <file file="build/production.properties" />
+        </loadproperties>
+
+        <property name="warfile.name" value="depot" />
+        <property name="package.name" value="${warfile.name}.war" />
+        <!--Tomcat Specific variables-->
+        <property name="tomcat.dir" value="/usr/local/apache-tomcat-7.0.109" />
+        <property name="webapp.dir" value="${tomcat.dir}/builds" />
+        <property name="package.file" value="${webapp.dir}/${package.name}" />
+        <!--Workspace specific variables-->
+        <property name="workspace.dir" value="/var/local/lib/jenkins/jobs/middleware/workspace/trunk/middleware" />
+        <property name="webcontent.dir" value="${workspace.dir}/WebContent" />
+        <property name="web-inf.dir" value="${webcontent.dir}/WEB-INF" />
+        <property name="lib.dir" location="${web-inf.dir}/lib" />
+        <property name="pages.dir" value="${web-inf.dir}/jsp" />
+        <property name="src.dir" value="${workspace.dir}/src" />
+        <property name="properties.dir" value="${web-inf.dir}/classes" />
+        <!-- temp directory created to build project for war-->
+        <property name="temp.dir" value="${workspace.dir}/buildWork" />
+        <property name="temp.dir.web-inf" value="${temp.dir}/WEB-INF" />
+        <property name="temp.dir.web-inf.jsp" value="${temp.dir.web-inf}/jsp" />
+        <property name="temp.dir.lib" value="${temp.dir.web-inf}/lib" />
+        <property name="temp.dir.classes" value="${temp.dir.web-inf}/classes" />
+        <property name="temp.dir.meta-inf" value="${temp.dir}/META-INF" />
+    </target>
+
+    <target name="clean">
+        <delete dir="${temp.dir}" />
+        <delete dir="${temp.dir.classes}" />
+        <delete dir="${temp.dir.meta-inf}" />
+        <delete dir="${temp.dir.web-inf}" />
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="${temp.dir}" />
+        <mkdir dir="${temp.dir.lib}" />
+        <mkdir dir="${temp.dir.meta-inf}" />
+        <mkdir dir="${temp.dir.web-inf}" />
+        <mkdir dir="${temp.dir.classes}" />
+    </target>
+
+
+    <target name="antTemplates">
+        <delete file="${properties.dir}/applicationContext-hibernate.xml" quiet="true" />
+        <copy file="${properties.dir}/applicationContext-hibernate.xml_tpl" tofile="${properties.dir}/applicationContext-hibernate.xml">
+            <filterchain>
+                <replacetokens>
+                    <token key="hibernate.connection.url" value="${hibernate.connection.url}" />
+                    <token key="hibernate.connection.username" value="${hibernate.connection.username}" />
+                    <token key="hibernate.connection.password" value="${hibernate.connection.password}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+        <delete file="${properties.dir}/files.properties" quiet="true" />
+        <copy file="${properties.dir}/files.properties_tpl" tofile="${properties.dir}/files.properties">
+            <filterchain>
+                <replacetokens>
+                    <token key="WORK_FOLDER" value="${WORK_FOLDER}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+        <delete file="${properties.dir}/log4j.xml" quiet="true" />
+        <copy file="${properties.dir}/log4j.xml_tpl" tofile="${properties.dir}/log4j.xml">
+            <filterchain>
+                <replacetokens>
+                    <token key="log4j.log.directory" value="${log4j.log.directory}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+    </target>
+
+    <!-- COMPILE -->
+    <target name="compile">
+        <echo>=== COMPILE ===</echo>
+        <echo>Compiling ${src.dir} files ...</echo>
+
+        <javac debug="on" encoding="iso-8859-1" srcdir="${src.dir}" destdir="${temp.dir.classes}" includes="**/*">
+            <classpath>
+                <pathelement path="${lib.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                    <include name="**/*.rar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- PACKAGE -->
+    <target name="package">
+        <echo>=== PACKAGE ===</echo>
+        <!-- copy properties files and 2 xml from src folder -->
+        <copy todir="${temp.dir.classes}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.xml" />
+                <include name="**/*.properties" />
+            </fileset>
+        </copy>
+
+        <!-- Copy WEB Content Folder-->
+        <copy todir="${temp.dir}">
+            <fileset dir="${webcontent.dir}">
+                <exclude name="**/*.java" />
+                <exclude name="**/*_tpl" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="localhostDeploy" description="localhostDeploy" depends="init-localhost,antTemplates,clean,prepare,compile,package">
+        <!-- Create the war File -->
+        <echo>=== DEPLOY WAR ===</echo>
+        <war destfile="${package.file}" webxml="${temp.dir.web-inf}/web.xml" basedir="${temp.dir}" duplicate="preserve" />
+
+        <!-- Cleanup temp directory -->
+        <echo>=== CLEANUP ===</echo>
+        <delete dir="${temp.dir}" />
+        <delete dir="${temp.dir.classes}" />
+        <delete dir="${temp.dir.meta-inf}" />
+        <delete dir="${temp.dir.web-inf}" />
+    </target>
+
+    <target name="productionDeploy" description="localhostDeploy" depends="init-production,antTemplates,clean,prepare,compile,package">
+        <!-- Create the war File -->
+        <echo>=== DEPLOY WAR ===</echo>
+        <war destfile="${package.file}" webxml="${temp.dir.web-inf}/web.xml" basedir="${temp.dir}" duplicate="preserve" />
+
+        <!-- Cleanup temp directory -->
+        <echo>=== CLEANUP ===</echo>
+        <delete dir="${temp.dir}" />
+        <delete dir="${temp.dir.classes}" />
+        <delete dir="${temp.dir.meta-inf}" />
+        <delete dir="${temp.dir.web-inf}" />
+    </target>
+
+    <target name="deploy">
+        <!-- Create the war File -->
+        <echo>=== DEPLOY WAR ===</echo>
+        <war destfile="${package.file}" webxml="${temp.dir.web-inf}/web.xml" basedir="${temp.dir}" duplicate="preserve" />
+
+        <!-- Cleanup temp directory -->
+        <echo>=== CLEANUP ===</echo>
+        <delete dir="${temp.dir}" />
+        <delete dir="${temp.dir.classes}" />
+        <delete dir="${temp.dir.meta-inf}" />
+        <delete dir="${temp.dir.web-inf}" />
+    </target>
+
+</project>
